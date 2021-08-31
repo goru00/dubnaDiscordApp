@@ -6,6 +6,6 @@
 
 .env
 
-# package*
+# package-lock
 
-package*.json
+package-lock.json

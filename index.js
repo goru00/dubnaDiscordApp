@@ -1,21 +1,35 @@
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, MessageAttachment } = require('discord.js');
+const fs = require('fs');
+const path = require('path');
 const disk = require('ya-disk');
 require('dotenv').config();
-
+const Discord = require('discord.js');
+const Canvas = require('canvas');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
 const API_TOKEN = process.env.TOKEN;
 
-let backup; 
+client.on("message", async message => {
+  if (message.author.bot) return;
+  if (!message.content.startsWith("!")) return;
+  const commandBody = message.content.slice("!".length);
+  const commandArgs = commandBody.split(' ');
+  const command = commandArgs.shift().toLowerCase();
+  if (command === "расписание") {
+    const canvas = Canvas.createCanvas(600, 700);
+    const context = canvas.getContext('2d');
+    const bg = await Canvas.loadImage(path.resolve('files', 'timetable.jpg'));
+    context.drawImage(bg, 0, 0, canvas.width, canvas.height);
+    const atach = new Discord.MessageAttachment(canvas.toBuffer(), 'timetable.png');
+    console.log("message send");
+    message.reply({ files: [atach] });
+  } else if (command === "help" || command === "помощь") {
+    console.log("message send");
+    let filecontent = fs.readFileSync(path.resolve('files', 'help.txt'), "utf8");
+    message.reply(filecontent);
+  } else {
+    message.reply('Сорян, братик, в этой ситуации я не абонент.');
+  } 
+});
 
-setInterval(async () => {
-  try {
-    const {items} = (await disk.meta.get(API_TOKEN, '/04'))._embedded;
-    if (JSON.stringify(items) != JSON.stringify(backup)) {
-      backup = items;
-    }
-    items.forEach((item, index) => console.log(`${index + 1}: ${item.name}`));
-  } catch (error) {
-    console.error(error);
-  }
-}, 5000);
+client.login(process.env.BOT_TOKEN);
