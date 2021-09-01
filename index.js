@@ -46,4 +46,21 @@ client.on("message", async message => {
   } 
 });
 
+
+const TreeFiles = async (filepath = '/') => {
+    const dir = {};
+    const {items} = (await disk.meta.get(API_TOKEN, filepath))._embedded;
+    const files = Array();
+    items.forEach((item, index) => {
+        if (item.type === "dir") return Object.assign(dir, TreeFiles(item.path));
+        files.push({
+            "id" : index,
+            "name" : item.name,
+            "path" : item.path 
+        });
+        console.log(`${index} : ${item.name} : ${item.path}`);
+    });
+    return { "items" : files };
+};
+
 client.login(process.env.BOT_TOKEN);
