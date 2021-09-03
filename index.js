@@ -10,6 +10,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 var nowDate = new Date();
 const API_TOKEN_YD = process.env.TOKEN;
 
+
 client.on('ready', message => {
   message.channels.cache.get('803286281147908096').send(`Перезапуск бота. Дата и время запуска: ${nowDate}`);
 });
@@ -32,6 +33,15 @@ client.on("message", async message => {
     message.reply({ files: [atach] });
 
   } 
+  else if (command === "долги" || command === "debts") {
+    const canvas = Canvas.createCanvas(1400, 600);
+    const context = canvas.getContext('2d');
+    const bg = await Canvas.loadImage(path.resolve('files', 'debts.jpg'));
+    context.drawImage(bg, 0, 0, canvas.width, canvas.height);
+    const atach = new MessageAttachment(canvas.toBuffer(), 'debts.png');
+    console.log("message send");
+    message.reply({ files: [atach] });
+  }
   else if (command === "help" || command === "помощь") {
 
     console.log("message send");
