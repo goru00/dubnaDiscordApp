@@ -5,14 +5,51 @@ const path = require('path');
 const disk = require('ya-disk');
 const Canvas = require('canvas');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const axios = require('axios').default;
 
+const API_URL_YD = "https://cloud-api.yandex.net/v1/";
+const API_URL_DISK_YD = API_URL_YD + "disk/";
+const API_URL_DISK_RESOURCES_YD = API_URL_DISK_YD + "resources/";
+const API_URL_DISK_RESOURCES_FILES_YD = API_URL_DISK_RESOURCES_YD + "files/";
+
+const instance = axios.create();
+
+instance.defaults.timeout = 2500;
+instance.defaults.headers.common['Authorization'] = process.env.TOKEN_YD;
+
+const Resources = [];
 
 var nowDate = new Date();
 const API_TOKEN_YD = process.env.TOKEN;
 
 
 client.on('ready', message => {
-  message.channels.cache.get('803286281147908096').send(`Перезапуск бота. Дата и время запуска: ${nowDate}`);
+  const channel = message.channels.cache.get('803286281147908096');
+  channel.send(`Перезапуск бота. Дата и время запуска: ${nowDate}`);
+  (async () => {
+    while (true) {
+      instance.get(API_URL_DISK_RESOURCES_YD + 'last-uploaded/')
+        .then((res) => {
+          if (Resources == 0) {
+            res.data.items.forEach((item, index) => {
+              Resources.push(item.name);
+            });
+          } else {
+            res.data.items.forEach((item, index) => {
+              let flag = false;
+              for (let pos in Resources)
+              {
+                if (Resources[pos] == item.name) flag = true;
+              }
+              if (!flag) {
+                await channel.send(`Новый файл на YD\n${item.name} : Ссылка: ${item.path}`);
+                Resources.push(item.name);
+              }
+          });
+      }
+    });
+    }
+  });
 });
 
 client.on("message", async message => {
@@ -55,22 +92,5 @@ client.on("message", async message => {
 
   } 
 });
-
-
-const TreeFiles = async (filepath = '/') => {
-    const dir = {};
-    const {items} = (await disk.meta.get(API_TOKEN, filepath))._embedded;
-    const files = Array();
-    items.forEach((item, index) => {
-        if (item.type === "dir") return Object.assign(dir, TreeFiles(item.path));
-        files.push({
-            "id" : index,
-            "name" : item.name,
-            "path" : item.path 
-        });
-        console.log(`${index} : ${item.name} : ${item.path}`);
-    });
-    return { "items" : files };
-};
 
 client.login(process.env.BOT_TOKEN);
