@@ -20,8 +20,6 @@ instance.defaults.headers.common['Authorization'] = process.env.TOKEN_YD;
 const Resources = [];
 
 var nowDate = new Date();
-const API_TOKEN_YD = process.env.TOKEN;
-
 
 client.on('ready', message => {
   const channel = message.channels.cache.get('803286281147908096');
