@@ -24,30 +24,29 @@ var nowDate = new Date();
 client.on('ready', message => {
   const channel = message.channels.cache.get('803286281147908096');
   channel.send(`Перезапуск бота. Дата и время запуска: ${nowDate}`);
-  (async () => {
-    while (true) {
-      instance.get(API_URL_DISK_RESOURCES_YD + 'last-uploaded/')
-        .then((res) => {
-          if (Resources == 0) {
+  setInterval(async () => {
+    instance.get(API_URL_DISK_RESOURCES_YD + 'last-uploaded/')
+    .then((res) => {
+        if (Resources == 0) {
             res.data.items.forEach((item, index) => {
-              Resources.push(item.name);
-            });
-          } else {
-            res.data.items.forEach((item, index) => {
-              let flag = false;
-              for (let pos in Resources)
-              {
-                if (Resources[pos] == item.name) flag = true;
-              }
-              if (!flag) {
-                await channel.send(`Новый файл на YD\n${item.name} : Ссылка: ${item.path}`);
                 Resources.push(item.name);
-              }
-          });
-      }
+            });
+        } else {
+            res.data.items.forEach((item, index) => {
+                let flag = false;
+                for (let pos in Resources)
+                {
+                    if (Resources[pos] == item.name) flag = true;
+                }
+                if (!flag) {
+                    channel.send(`Новый файл на YD\n${item.name} : Ссылка: ${item.path}`);
+                    console.log(`Новый файл на YD\n${item.name} : Ссылка: ${item.path}`);
+                    Resources.push(item.name);
+                }
+            });
+        }
     });
-    }
-  });
+  }, 5000);
 });
 
 client.on("message", async message => {
