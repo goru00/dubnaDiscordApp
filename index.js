@@ -17,37 +17,23 @@ const instance = axios.create();
 instance.defaults.timeout = 2500;
 instance.defaults.headers.common['Authorization'] = process.env.TOKEN_YD;
 
-const Resources = [];
-
-var nowDate = new Date();
-
-client.on('ready', message => {
-  const channel = message.channels.cache.get('803286281147908096');
-  channel.send(`Перезапуск бота. Дата и время запуска: ${nowDate}`);
-  setInterval(async () => {
-    instance.get(API_URL_DISK_RESOURCES_YD + 'last-uploaded/')
-    .then((res) => {
-        if (Resources == 0) {
-            res.data.items.forEach((item, index) => {
+const Resources = [];                                                              
+var nowDate = new Date();                                                          
+client.on('ready', message => {                                                      const channel = message.channels.cache.get('803286281147908096');                  channel.send(`Перезапуск бота. Дата и время запуска: ${nowDate}`);                 setInterval(async () => {
+    instance.get(API_URL_DISK_RESOURCES_YD + 'last-uploaded/')                         .then((res) => {
+        if (Resources == 0) {                                                                  res.data.items.forEach((item, index) => {
                 Resources.push(item.name);
             });
-        } else {
-            res.data.items.forEach((item, index) => {
-                let flag = false;
-                for (let pos in Resources)
-                {
-                    if (Resources[pos] == item.name) flag = true;
+        } else {                                                                               res.data.items.forEach((item, index) => {                                              let flag = false;                                                                  for (let pos in Resources)                                                         {                                                                                      if (Resources[pos] == item.name) flag = true;
                 }
                 if (!flag) {
-                    channel.send(`Новый файл на YD\n${item.name} : Ссылка: ${item.path}`);
-                    console.log(`Новый файл на YD\n${item.name} : Ссылка: ${item.path}`);
-                    Resources.push(item.name);
-                }
-            });
+                    channel.send(`Новый файл на YD\n${item.name} : Ссылка: ${item.>                    console.log(`Новый файл на YD\n${item.name} : Ссылка: ${item.p>                    Resources.push(item.name);
+                }                                                                              });
         }
     });
   }, 5000);
 });
+
 
 client.on("message", async message => {
   if (message.author.bot) return;
