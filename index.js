@@ -1,11 +1,16 @@
 require('dotenv').config();
+const express = require('express');
 const { Client, Intents, MessageAttachment } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const Canvas = require('canvas');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 const axios = require('axios').default;
+//const VKBot = require('node-vk-bot-api');
+//const vk = new VKBot(process.env.TOKEN_VK);
+const port = process.env.PORT || 7000;
 
+// YD settings
 const API_URL_YD = "https://cloud-api.yandex.net/v1/";
 const API_URL_DISK_YD = API_URL_YD + "disk/";
 const API_URL_DISK_RESOURCES_YD = API_URL_DISK_YD + "resources/";
@@ -16,11 +21,24 @@ const instance = axios.create();
 instance.defaults.timeout = 2500;
 instance.defaults.headers.common['Authorization'] = process.env.TOKEN_YD;
 
+// express settings
+
+const app = express();
+app.get("/", (res, req) => {
+  res.send('Auth');
+});
+
+app.listen(port, () => {
+  console.log(`WebServer start on port: ${port}`);
+});
+
+// main
+
 const Resources = [];                                                              
 var nowDate = new Date();                                                          
 client.on('ready', message => {                                                      
   const channel = message.channels.cache.get('803286281147908096');                  
-  channel.send(`Перезапуск бота. Дата и время запуска: ${nowDate}`);                 
+  //channel.send(`Перезапуск бота. Дата и время запуска: ${nowDate}`);                 
   setInterval(async () => {
     instance.get(API_URL_DISK_RESOURCES_YD + 'last-uploaded/')                         
     .then((res) => {
@@ -88,4 +106,4 @@ client.on("message", async message => {
   } 
 });
 
-client.login(process.env.BOT_TOKEN);
+client.login(process.env.TOKEN_DISCORD);
