@@ -24,7 +24,7 @@ instance.defaults.headers.common['Authorization'] = process.env.TOKEN_YD;
 // express settings
 
 const app = express();
-app.get("/", (res, req) => {
+app.get("/", function(res, req) {
   res.send('Auth');
 });
 
