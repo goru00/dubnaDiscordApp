@@ -76,7 +76,7 @@ client.on("message", async message => {
   if (command === "расписание") {
     const canvas = Canvas.createCanvas(600, 800);
     const context = canvas.getContext('2d');
-    const bg = await Canvas.loadImage(path.resolve('files', 'timetable.jpg'));
+    const bg = await Canvas.loadImage(path.resolve('files', 'timetable.png'));
     context.drawImage(bg, 0, 0, canvas.width, canvas.height);
     const atach = new MessageAttachment(canvas.toBuffer(), 'timetable.png');
     console.log("message send");
